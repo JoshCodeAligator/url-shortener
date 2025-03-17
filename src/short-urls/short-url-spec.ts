@@ -4,7 +4,7 @@ import { clearRepositories, createNestApplication } from '../test-helpers';
 import { ShortUrlsRepository } from './short-urls.repository';
 import { faker } from '@faker-js/faker';
 import request from 'supertest';
-import { User } from 'src/users/user.entity/user.entity';
+import { User } from 'src/users/user.entity';
 
 describe('ShortUrls', () => {
   let app: INestApplication;

@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { ShortUrl } from './short-url.entity';
 import { CreateShortUrlDto } from './dto/create-short-url.dto';
-import { User } from 'src/users/user.entity/user.entity';
+import { User } from 'src/users/user.entity';
 
 @Injectable()
 export class ShortUrlsRepository extends Repository<ShortUrl> {

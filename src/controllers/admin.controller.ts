@@ -12,10 +12,10 @@ import {
 import { AuthGuard } from '@nestjs/passport';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Analytics } from './user.entity/analytics.entity';
-import { WeeklyRequestCount } from './user.entity/weekly.entity';
-import { MonthlyRequestCount } from './user.entity/monthly.entity';
-import { User } from './user.entity/user.entity';
+import { Analytics } from '../entities/analytics.entity';
+import { WeeklyRequestCount } from '../entities/weekly.entity';
+import { MonthlyRequestCount } from '../entities/monthly.entity';
+import { User } from '../users/user.entity';
 import { ShortUrl } from 'src/short-urls/short-url.entity';
 
 @Injectable()
@@ -42,9 +42,13 @@ export class AdminAnalyticsController {
     private readonly shortUrlRepo: Repository<ShortUrl>,
   ) {}
 
-  @Get('/analytics/:shortUrlId')
+  @Get('analytics/:shortUrlId')
   async getAnalytics(@Param('shortUrlId', ParseIntPipe) id: number) {
-    const shortUrl = await this.shortUrlRepo.findOne({ where: { suid: id } });
+    const shortUrl = await this.shortUrlRepo.findOne({
+      where: { suid: id },
+      relations: ['user'],
+    });
+
     if (!shortUrl) {
       throw new NotFoundException('Short URL not found');
     }
@@ -69,18 +73,19 @@ export class AdminAnalyticsController {
     }
 
     return {
+      shortUrl,
       analytics,
       weeklyCounts,
       monthlyCounts,
     };
   }
 
-  @Get('/users')
+  @Get('users')
   async getAllUsers() {
     return this.userRepo.find();
   }
 
-  @Get('/urls')
+  @Get('urls')
   async getAllShortUrls() {
     return this.shortUrlRepo.find({ relations: ['user'] });
   }

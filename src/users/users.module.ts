@@ -1,13 +1,13 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersService } from './users.service';
-import { User } from './user.entity/user.entity';
-import { AuthController } from './auth.controller';
+import { User } from './user.entity';
+import { AuthController } from '../controllers/auth.controller';
 import { JwtModule } from '@nestjs/jwt';
 import { ShortUrl } from 'src/short-urls/short-url.entity';
-import { Analytics } from './user.entity/analytics.entity';
-import { WeeklyRequestCount } from './user.entity/weekly.entity';
-import { MonthlyRequestCount } from './user.entity/monthly.entity';
+import { Analytics } from '../entities/analytics.entity';
+import { WeeklyRequestCount } from '../entities/weekly.entity';
+import { MonthlyRequestCount } from '../entities/monthly.entity';
 
 @Module({
   imports: [

@@ -1,7 +1,9 @@
-import { Analytics } from 'src/users/user.entity/analytics.entity';
-import { MonthlyRequestCount } from 'src/users/user.entity/monthly.entity';
-import { User } from 'src/users/user.entity/user.entity';
-import { WeeklyRequestCount } from 'src/users/user.entity/weekly.entity';
+import { WeeklyRequestCount } from 'src/entities/weekly.entity';
+import { MonthlyRequestCount } from 'src/entities/monthly.entity';
+import { User } from 'src/users/user.entity';
+import { Analytics } from 'src/entities/analytics.entity';
+
+
 import {
   Entity,
   PrimaryGeneratedColumn,

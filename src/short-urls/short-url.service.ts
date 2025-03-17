@@ -9,9 +9,10 @@ import { Repository } from 'typeorm';
 import { ShortUrl } from './short-url.entity';
 import { CreateShortUrlDto } from './dto/create-short-url.dto';
 import { UpdateShortUrlDto } from './dto/update-short-url.dto';
-import { User } from 'src/users/user.entity/user.entity';
-import { WeeklyRequestCount } from 'src/users/user.entity/weekly.entity';
-import { MonthlyRequestCount } from 'src/users/user.entity/monthly.entity';
+import { User } from 'src/users/user.entity';
+import { WeeklyRequestCount } from 'src/entities/weekly.entity';
+import { MonthlyRequestCount } from 'src/entities/monthly.entity';
+
 import dayjs from 'dayjs';
 
 @Injectable()
