@@ -22,12 +22,15 @@ import { CreateShortUrlDto } from './dto/create-short-url.dto';
 import { User } from 'src/users/user.entity';
 import { Analytics } from 'src/entities/analytics.entity';
 
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiParam } from '@nestjs/swagger';
+
 declare module 'express' {
   interface Request {
     user?: any;
   }
 }
 
+@ApiTags('Short URLs')
 @Controller('short-urls')
 export class ShortUrlController {
   constructor(
@@ -42,6 +45,11 @@ export class ShortUrlController {
   ) {}
 
   @Post()
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Create a new shortened URL' })
+  @ApiResponse({ status: 201, description: 'Short URL created successfully.' })
+  @ApiResponse({ status: 409, description: 'Shortened URL already exists.' })
+  @ApiResponse({ status: 500, description: 'Internal Server Error' })
   async createShortUrl(@Body() dto: CreateShortUrlDto, @Req() req: Request) {
     const user = req.user;
 
@@ -77,6 +85,9 @@ export class ShortUrlController {
   }
 
   @Get()
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get all short URLs for the authenticated user' })
+  @ApiResponse({ status: 200, description: 'List of short URLs returned successfully.' })
   async getAllShortUrls(@Req() req: Request) {
     const fallbackUser: User = { uid: 1 } as User;
     const user = req.user || fallbackUser;
@@ -84,6 +95,10 @@ export class ShortUrlController {
   }
 
   @Get('/:shortenedUrl')
+  @ApiOperation({ summary: 'Redirect to the original URL based on the shortened URL' })
+  @ApiParam({ name: 'shortenedUrl', type: String, description: 'Shortened URL code' })
+  @ApiResponse({ status: 301, description: 'Redirecting to original URL.' })
+  @ApiResponse({ status: 404, description: 'Short URL not found.' })
   async redirect(@Param('shortenedUrl') short: string, @Req() req: Request, @Res() res: Response) {
     const shortUrl = await this.shortUrlRepo.findOne({
       where: { shortenedUrl: short },
@@ -115,7 +130,6 @@ export class ShortUrlController {
     const analytics = shortUrl.analytics;
 
     analytics.totalRequests += 1;
-
     analytics.deviceTypeDistribution[device] = (analytics.deviceTypeDistribution[device] || 0) + 1;
     analytics.osTypeDistribution[os] = (analytics.osTypeDistribution[os] || 0) + 1;
     analytics.geographicalDistribution[ip] = (analytics.geographicalDistribution[ip] || 0) + 1;

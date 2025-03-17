@@ -17,6 +17,13 @@ import { WeeklyRequestCount } from '../entities/weekly.entity';
 import { MonthlyRequestCount } from '../entities/monthly.entity';
 import { User } from '../users/user.entity';
 import { ShortUrl } from 'src/short-urls/short-url.entity';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+  ApiParam,
+} from '@nestjs/swagger';
 
 @Injectable()
 class AdminGuard implements CanActivate {
@@ -26,6 +33,8 @@ class AdminGuard implements CanActivate {
   }
 }
 
+@ApiTags('Admin Analytics')
+@ApiBearerAuth()
 @UseGuards(AuthGuard('jwt'), AdminGuard)
 @Controller('admin')
 export class AdminAnalyticsController {
@@ -43,6 +52,10 @@ export class AdminAnalyticsController {
   ) {}
 
   @Get('analytics/:shortUrlId')
+  @ApiOperation({ summary: 'Get full analytics for a Short URL' })
+  @ApiParam({ name: 'shortUrlId', type: Number, description: 'Short URL ID (suid)' })
+  @ApiResponse({ status: 200, description: 'Analytics retrieved successfully' })
+  @ApiResponse({ status: 404, description: 'Short URL or analytics not found' })
   async getAnalytics(@Param('shortUrlId', ParseIntPipe) id: number) {
     const shortUrl = await this.shortUrlRepo.findOne({
       where: { suid: id },
@@ -81,11 +94,15 @@ export class AdminAnalyticsController {
   }
 
   @Get('users')
+  @ApiOperation({ summary: 'Get all users (Admin only)' })
+  @ApiResponse({ status: 200, description: 'Users retrieved successfully' })
   async getAllUsers() {
     return this.userRepo.find();
   }
 
   @Get('urls')
+  @ApiOperation({ summary: 'Get all shortened URLs (Admin only)' })
+  @ApiResponse({ status: 200, description: 'Short URLs retrieved successfully' })
   async getAllShortUrls() {
     return this.shortUrlRepo.find({ relations: ['user'] });
   }
