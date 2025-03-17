@@ -3,7 +3,6 @@ import { DataSource } from 'typeorm';
 import { clearRepositories, createNestApplication } from '../test-helpers';
 import { ShortUrlsRepository } from './short-urls.repository';
 import { faker } from '@faker-js/faker';
-import { ShortUrl } from './short-url.entity';
 import request from 'supertest';
 import { User } from 'src/users/user.entity/user.entity';
 
@@ -40,7 +39,6 @@ describe('ShortUrls', () => {
     ];
   };
 
-  // Mock user with at least uid (you can expand if needed)
   const mockUser: User = {
     uid: 1,
     email: 'test@example.com',
@@ -51,7 +49,7 @@ describe('ShortUrls', () => {
 
   const createShortUrlItem = async () => {
     const dto = createShortUrlBody();
-    return shortUrlsRepo.createShortUrl(dto, mockUser); // Pass user
+    return shortUrlsRepo.createShortUrl(dto, mockUser); 
   };
 
   beforeAll(async () => {

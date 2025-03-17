@@ -12,7 +12,6 @@ import {
   OneToOne,
 } from 'typeorm';
 
-
 @Entity('short_urls')
 export class ShortUrl {
   @PrimaryGeneratedColumn()
