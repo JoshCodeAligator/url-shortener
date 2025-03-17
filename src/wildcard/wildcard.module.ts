@@ -1,10 +1,9 @@
 import { Module } from '@nestjs/common';
-import { LinksModule } from '../links/links.module';
+import { ShortUrlsModule } from '../short-urls/short-url.module';
 import { WildcardController } from './wildcard.controller';
 
-
 @Module({
-  imports: [LinksModule],
+  imports: [ShortUrlsModule],
   controllers: [WildcardController],
 })
 export class WildcardModule {}

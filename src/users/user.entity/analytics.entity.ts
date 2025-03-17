@@ -1,14 +1,21 @@
-import { Link } from 'src/links/link.entity';
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany, ManyToOne, CreateDateColumn, OneToOne, JoinColumn } from 'typeorm';
-import { User } from './user.entity';
-import { ShortUrl } from './short-url.entity';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  OneToMany,
+  ManyToOne,
+  CreateDateColumn,
+  OneToOne,
+  JoinColumn,
+} from 'typeorm';
+import { ShortUrl } from 'src/short-urls/short-url.entity';
 
 @Entity('analytics')
 export class Analytics {
   @PrimaryGeneratedColumn()
   auid: number;
 
-  @OneToOne(() => ShortUrl, url => url.analytics, { onDelete: 'CASCADE' })
+  @OneToOne(() => ShortUrl, (url) => url.analytics, { onDelete: 'CASCADE' })
   @JoinColumn()
   shortUrl: ShortUrl;
 
@@ -25,7 +32,7 @@ export class Analytics {
   geographicalDistribution: Record<string, number>;
 
   @Column({ type: 'jsonb', default: {} })
-  hourlyRequestDistribution: Record<string, number>;  
+  hourlyRequestDistribution: Record<string, number>;
 
   @Column({ type: 'jsonb', default: {} })
   referrerDomains: Record<string, number>;

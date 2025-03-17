@@ -1,21 +1,23 @@
 import { Controller, Get, Param, Res } from '@nestjs/common';
 import { Response } from 'express';
-import { LinksService } from '../links/links.service';
+import { ShortUrlsService } from 'src/short-urls/short-url.service';
 
 @Controller()
 export class WildcardController {
-  constructor(private readonly linksService: LinksService) {}
+  constructor(private readonly shortUrlsService: ShortUrlsService) {}
 
-  @Get('/:name')
+  @Get('/:shortenedUrl')
   async handleRedirect(
-    @Param('name') name: string,
-    @Res() res: Response
-  ): Promise<void> {
-    const link = await this.linksService.getLink({ name });
-    if (link) {
-      return res.redirect(301, link.url);
-    } else {
-      res.status(404).send('Link not found');
+    @Param('shortenedUrl') shortenedUrl: string,
+    @Res() res: Response,
+  ): Promise<any> {
+    const shortUrl = await this.shortUrlsService.getByShortenedUrl(shortenedUrl);
+    if (!shortUrl) {
+      return res.status(404).send('Short URL not found');
     }
+
+    await this.shortUrlsService.updateAnalytics(shortUrl);
+
+    return res.redirect(301, shortUrl.originalUrl);
   }
 }

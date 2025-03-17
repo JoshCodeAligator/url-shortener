@@ -1,6 +1,5 @@
-import { Link } from 'src/links/link.entity';
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
-import { ShortUrl } from './short-url.entity';
+import { ShortUrl } from 'src/short-urls/short-url.entity';
 
 @Entity('users')
 export class User {
@@ -22,6 +21,6 @@ export class User {
   @Column({ default: false })
   isAdmin: boolean;
 
-  @OneToMany(() => ShortUrl, url => url.user)
+  @OneToMany(() => ShortUrl, (url) => url.user)
   shortUrls: ShortUrl[];
 }

@@ -5,7 +5,6 @@ import * as bcrypt from 'bcrypt';
 import { User } from './user.entity/user.entity';
 import { JwtService } from '@nestjs/jwt';
 
-
 @Controller('auth')
 export class AuthController {
   constructor(
@@ -15,9 +14,15 @@ export class AuthController {
   ) {}
 
   @Post('register')
-  async register(@Body() body: { email: string; password: string }) {
+  async register(
+    @Body() body: { email: string; password: string; isAdmin?: boolean },
+  ) {
     const hashedPassword = await bcrypt.hash(body.password, 10);
-    const user = this.userRepo.create({ email: body.email, password: hashedPassword });
+    const user = this.userRepo.create({
+      email: body.email,
+      password: hashedPassword,
+      isAdmin: body.isAdmin || false,
+    });
     await this.userRepo.save(user);
     return { message: 'User registered' };
   }
