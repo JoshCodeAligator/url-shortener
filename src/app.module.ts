@@ -2,9 +2,10 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { configValidationSchema } from './config.schema';
-import { WildcardModule } from './wildcard/wildcard.module';
 import { UsersModule } from './users/users.module';
 import { ShortUrlsModule } from './short-urls/short-url.module';
+import { AdminModule } from './users/admin.module';
+import { WildcardModule } from './wildcard/wildcard.module';
 
 @Module({
   imports: [
@@ -24,8 +25,9 @@ import { ShortUrlsModule } from './short-urls/short-url.module';
       synchronize: true,
     }),
     ShortUrlsModule,
-    WildcardModule,
     UsersModule,
+    AdminModule,
+    WildcardModule
   ],
   controllers: [],
   providers: [],

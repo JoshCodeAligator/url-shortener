@@ -34,7 +34,7 @@ export class AuthController {
     const user = this.userRepo.create({
       email: body.email,
       password: hashedPassword,
-      isAdmin: body.isAdmin || false,
+      isAdmin: body.isAdmin === true,
     });
     await this.userRepo.save(user);
     return { message: 'User registered' };

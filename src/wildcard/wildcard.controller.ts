@@ -1,5 +1,5 @@
-import { Controller, Get, Param, Res } from '@nestjs/common';
-import { Response } from 'express';
+import { Controller, Get, Param, Res, Req} from '@nestjs/common';
+import { Request, Response } from 'express';
 import { ShortUrlsService } from 'src/short-urls/short-url.service';
 import { ApiTags, ApiOperation, ApiParam, ApiResponse } from '@nestjs/swagger';
 
@@ -20,6 +20,7 @@ export class WildcardController {
   @ApiResponse({ status: 404, description: 'Short URL not found' })
   async handleRedirect(
     @Param('shortenedUrl') shortenedUrl: string,
+    @Req() req: Request,
     @Res() res: Response,
   ): Promise<any> {
     const shortUrl = await this.shortUrlsService.getByShortenedUrl(shortenedUrl);
@@ -27,7 +28,7 @@ export class WildcardController {
       return res.status(404).send('Short URL not found');
     }
 
-    await this.shortUrlsService.updateAnalytics(shortUrl);
+    await this.shortUrlsService.updateAnalytics(shortUrl, req);
 
     return res.redirect(301, shortUrl.originalUrl);
   }

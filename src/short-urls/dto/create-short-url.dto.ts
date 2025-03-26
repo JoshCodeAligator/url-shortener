@@ -18,3 +18,4 @@ export class CreateShortUrlDto {
   @IsString()
   shortenedUrl: string;
 }
+

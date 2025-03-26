@@ -30,6 +30,3 @@ services:
       POSTGRES_PASSWORD: Yolo123$
       POSTGRES_DB: scription
       DB_HOST: db
-
-  
-

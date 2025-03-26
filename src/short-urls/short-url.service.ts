@@ -12,8 +12,10 @@ import { UpdateShortUrlDto } from './dto/update-short-url.dto';
 import { User } from 'src/users/user.entity';
 import { WeeklyRequestCount } from 'src/entities/weekly.entity';
 import { MonthlyRequestCount } from 'src/entities/monthly.entity';
-
+import { Analytics } from 'src/entities/analytics.entity';
+import { Request } from 'express';
 import dayjs from 'dayjs';
+import { UAParser } from 'ua-parser-js';
 
 @Injectable()
 export class ShortUrlsService {
@@ -26,6 +28,9 @@ export class ShortUrlsService {
 
     @InjectRepository(MonthlyRequestCount)
     private readonly monthlyRepo: Repository<MonthlyRequestCount>,
+
+    @InjectRepository(Analytics)
+    private readonly analyticsRepo: Repository<Analytics>,
   ) {}
 
   async getAllShortUrls(): Promise<ShortUrl[]> {
@@ -66,19 +71,54 @@ export class ShortUrlsService {
     return this.shortUrlRepo.findOne({ where: { shortenedUrl } });
   }
 
-  async updateAnalytics(shortUrl: ShortUrl): Promise<void> {
+  async updateAnalytics(shortUrl: ShortUrl, req: Request): Promise<void> {
+    const fullShortUrl = await this.shortUrlRepo.findOne({
+      where: { suid: shortUrl.suid },
+      relations: ['analytics'],
+    });
+
+    if (!fullShortUrl?.analytics) return;
+
+    const analytics = fullShortUrl.analytics;
+
+    const userAgent = req.headers['user-agent'] || '';
+    const referrer = req.headers.referer || 'direct';
+    const ip = req.ip || 'unknown';
+    const hour = dayjs().hour().toString();
+
+    const parser = new UAParser(userAgent);
+    const device = parser.getDevice().type || 'Desktop';
+    const os = parser.getOS().name || 'Other';
+    analytics.totalRequests += 1;
+
+    analytics.deviceTypeDistribution[device] =
+      (analytics.deviceTypeDistribution[device] || 0) + 1;
+    analytics.osTypeDistribution[os] =
+      (analytics.osTypeDistribution[os] || 0) + 1;
+    analytics.geographicalDistribution[ip] =
+      (analytics.geographicalDistribution[ip] || 0) + 1;
+    analytics.referrerDomains[referrer] =
+      (analytics.referrerDomains[referrer] || 0) + 1;
+    analytics.hourlyRequestDistribution[hour] =
+      (analytics.hourlyRequestDistribution[hour] || 0) + 1;
+
+    await this.analyticsRepo.save(analytics);
+
     const today = dayjs();
     const weekStart = today.startOf('week').toDate();
     const monthStart = today.startOf('month').toDate();
 
     let weekly = await this.weeklyRepo.findOne({
-      where: { shortUrl: { suid: shortUrl.suid }, week_start_date: weekStart },
+      where: {
+        shortUrl: { suid: fullShortUrl.suid },
+        week_start_date: weekStart,
+      },
       relations: ['shortUrl'],
     });
 
     if (!weekly) {
       weekly = this.weeklyRepo.create({
-        shortUrl,
+        shortUrl: fullShortUrl,
         week_start_date: weekStart,
         request_count: 1,
       });
@@ -89,7 +129,7 @@ export class ShortUrlsService {
 
     let monthly = await this.monthlyRepo.findOne({
       where: {
-        shortUrl: { suid: shortUrl.suid },
+        shortUrl: { suid: fullShortUrl.suid },
         month_start_date: monthStart,
       },
       relations: ['shortUrl'],
@@ -97,7 +137,7 @@ export class ShortUrlsService {
 
     if (!monthly) {
       monthly = this.monthlyRepo.create({
-        shortUrl,
+        shortUrl: fullShortUrl,
         month_start_date: monthStart,
         request_count: 1,
       });

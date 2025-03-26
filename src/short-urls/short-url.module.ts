@@ -6,12 +6,13 @@ import { ShortUrlController } from './short-url.controller';
 import { WeeklyRequestCount } from 'src/entities/weekly.entity';
 import { MonthlyRequestCount } from 'src/entities/monthly.entity';
 import { Analytics } from 'src/entities/analytics.entity';
+import { User } from '../users/user.entity';
 
 
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([ShortUrl, WeeklyRequestCount, MonthlyRequestCount, Analytics]),
+    TypeOrmModule.forFeature([ShortUrl, WeeklyRequestCount, MonthlyRequestCount, Analytics,  User]),
   ],
   providers: [ShortUrlsService],
   controllers: [ShortUrlController],
